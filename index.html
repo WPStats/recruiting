@@ -70,6 +70,21 @@
 .wpr input[type="search"]{font:14px var(--body);padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);min-width:0;flex:1 1 180px;max-width:280px}
 /* table */
 .wpr .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface);-webkit-overflow-scrolling:touch}
+.wpr .tbl.tall{max-height:78vh;overflow:auto}
+.wpr .tbl.tall thead{position:sticky;top:0;z-index:3}
+.wpr .tbl.tall thead th{box-shadow:inset 0 -1px 0 var(--line)}
+.wpr .tsb{display:flex;align-items:center;gap:6px;margin-bottom:-10px}
+.wpr .tsb[hidden]{display:none}
+.wpr .tsb button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;width:30px;height:24px;cursor:pointer;font:600 13px var(--body);line-height:1}
+.wpr .tsb button:disabled{opacity:.35;cursor:default}
+.wpr .tsb .tsr{flex:1;overflow-x:auto;overflow-y:hidden;height:14px}
+.wpr .tsb .tsr div{height:1px}
+.wpr .tsb .tsr,.wpr .tbl{scrollbar-width:thin;scrollbar-color:var(--pool) var(--pool-soft)}
+.wpr .tsb .tsr::-webkit-scrollbar,.wpr .tbl::-webkit-scrollbar{height:10px;width:10px}
+.wpr .tsb .tsr::-webkit-scrollbar-track,.wpr .tbl::-webkit-scrollbar-track{background:var(--pool-soft);border-radius:6px}
+.wpr .tsb .tsr::-webkit-scrollbar-thumb,.wpr .tbl::-webkit-scrollbar-thumb{background:var(--pool);border-radius:6px}
+.wpr .tsb .tsh{font:500 11px var(--mono);color:var(--muted);white-space:nowrap}
+@media (max-width:720px){.wpr .tsb .tsh{display:none}}
 .wpr table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
 .wpr th,.wpr td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 .wpr th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--bg);white-space:nowrap;cursor:pointer;user-select:none}
@@ -1197,6 +1212,24 @@ root.querySelectorAll(".gsw button").forEach(function(b){b.addEventListener("cli
   renderAll();
 })});
 })();
+
+/* table scrolling helpers: top scrollbar with arrow buttons, sticky header on tall tables */
+(function(){var busy=false;
+function fix(){busy=false;document.querySelectorAll(".wpr .tbl").forEach(function(t){
+  if(t.closest(".pv"))return;var tb=t.querySelector("table");if(!tb)return;
+  var bar=t.previousElementSibling;if(!bar||!bar.classList||!bar.classList.contains("tsb")){bar=document.createElement("div");bar.className="tsb";bar.innerHTML='<button type="button" data-d="-1" aria-label="Scroll table left">◀</button><div class="tsr"><div></div></div><button type="button" data-d="1" aria-label="Scroll table right">▶</button><span class="tsh">more columns →</span>';t.parentNode.insertBefore(bar,t);
+    var r=bar.querySelector(".tsr"),lock=0;
+    r.addEventListener("scroll",function(){if(lock===2){lock=0;return}lock=1;t.scrollLeft=r.scrollLeft});
+    t.addEventListener("scroll",function(){if(lock===1){lock=0;}else{lock=2;r.scrollLeft=t.scrollLeft}upd(bar,t)});
+    bar.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){t.scrollBy({left:+b.dataset.d*Math.max(200,t.clientWidth*0.7),behavior:"smooth"})})})}
+  var over=t.scrollWidth>t.clientWidth+4;bar.hidden=!over;
+  var inner=bar.querySelector(".tsr div");if(inner.style.width!==t.scrollWidth+"px")inner.style.width=t.scrollWidth+"px";
+  var tall=tb.querySelectorAll("tbody tr").length>15;if(t.classList.contains("tall")!==tall)t.classList.toggle("tall",tall);
+  upd(bar,t)})}
+function upd(bar,t){var b=bar.querySelectorAll("button"),m=t.scrollWidth-t.clientWidth;b[0].disabled=t.scrollLeft<=2;b[1].disabled=t.scrollLeft>=m-2;var h=bar.querySelector(".tsh");if(h)h.textContent=t.scrollLeft>=m-2?"":"more columns →"}
+function q(){if(!busy){busy=true;requestAnimationFrame(fix)}}
+var root=document.getElementById("wpr");if(root)new MutationObserver(function(ms){if(ms.some(function(m){if(m.type==="attributes"&&m.attributeName==="class"&&m.target.classList.contains("tbl"))return false;return !(m.target.classList&&(m.target.classList.contains("tsb")||m.target.closest&&m.target.closest(".tsb")))}))q()}).observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden","class"]});
+window.addEventListener("resize",q);q()})();
 </script>
 </body>
 </html>
