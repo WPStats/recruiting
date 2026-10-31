@@ -166,6 +166,9 @@
 .wpr .pvb h2{margin:0 0 4px;font-size:26px}
 .wpr .pvb h4{margin:16px 0 6px;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .wpr .pvb ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.wpr details.pvfold{border-top:1px solid var(--line);margin-top:12px;padding-top:8px}
+.wpr details.pvfold summary{cursor:pointer;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--pool)}
+.wpr details.pvfold>div{margin-top:8px}
 .wpr .pvx{position:absolute;top:10px;right:12px;border:0;background:none;font-size:26px;line-height:1;cursor:pointer;color:var(--muted)}
 .wpr .pvfacts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;margin-top:8px}
 .wpr .pvfacts span b{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
@@ -992,7 +995,7 @@ function openSP(s){
   h+='<h4>Links</h4><div class="pvlinks">'+links.map(function(l){return '<a href="'+esc(l[1])+'" target="_blank" rel="noopener">'+l[0]+'</a>'}).join("")+'</div>';
   var on=onSS(s);
   h+='<p class="note" style="margin-top:12px"><button class="chip" id="spsl" aria-pressed="'+on+'">'+(on?"★ On your school list":"☆ Add to your school list")+'</button></p>';
-  $("#pvb").innerHTML=h;var pv=$("#pv");if(pv.hidden){pv._ret=document.activeElement}pv.hidden=false;$("#pvb .pvx").focus();
+  $("#pvb").innerHTML=h;foldH4($("#pvb"));var pv=$("#pv");if(pv.hidden){pv._ret=document.activeElement}pv.hidden=false;$("#pvb .pvx").focus();
   $("#spsl").addEventListener("click",function(){toggleSS(s);openSP(s)});
 }
 function retLine(o,yr){if(!o.ret)return "";var r=o.ret[String(yr)];return POS.map(function(q){return q[0]+" "+r[q[0]]}).join(" · ")}
@@ -1140,6 +1143,8 @@ function drawTL(){var el=$("#tl-out");if(!el)return;var C=(TL||{}).classes||{},a
   '<div class="kv"><div><b>National-level commits</b>'+a.nat+' of '+a.n+'</div><div><b>Half of them committed by</b>'+fmtD(a.med_nat)+' ('+a.med_nat_m+' months after contact opened)</div><div><b>Half of everyone else by</b>'+fmtD(a.med_oth)+' ('+a.med_oth_m+' months)</div><div><b>First commit</b>'+fmtD(a.first)+' ('+a.first_m+' months)</div>'+(b&&b.first?'<div><b>Class of 2028 so far</b>'+b.n+' commit'+(b.n>1?'s':'')+', first on '+fmtD(b.first)+' ('+b.first_m+' months after contact opened June 15, 2026); '+b.nat+' national-level</div>':'')+'</div>'+
   '<div class="tbl"><table class="mini"><thead><tr><th>Month</th><th>Commits</th><th class="num">National-level</th><th class="num">Others</th><th class="num">Class committed so far</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
   '<p class="note">'+(G==="m"?'National-level players committed about six weeks earlier on average, and most of the class committed in the spring and summer of junior-to-senior year (April to October). ':'National-level players committed far earlier: most of them by the fall of junior year, almost a year ahead of everyone else. ')+'Dates are when a commit was first reported, which can lag the actual decision by days or weeks.</p></div></details>'+(function(){var T=((TL||{}).schools||{})[G]||{},L=Object.keys(T).map(function(k){var t=T[k],c7=t["2027"]||[0,0,0],c8=t["2028"]||[0,0,0];return [k,c7[1]+c8[1],c7[0]+c8[0],c7[2]+c8[2],c7,c8]}).filter(function(r){return r[1]>0}).sort(function(x,y){return y[1]-x[1]||y[3]-x[3]||x[0].localeCompare(y[0])});if(!L.length)return "";return '<details class="howto" id="tl-nat" data-tl="nat"'+(TLO.nat?' open':'')+'><summary>National-team commits by school</summary><div style="display:flex;flex-direction:column;gap:10px;margin-top:10px"><p class="note">Commits in the classes of 2027 and 2028 with a USA Water Polo national selection camp pick or national team spot'+(G==="m"?', and how many played for the USA at the 2026 U16 World Championships':'')+'.</p><div class="tbl"><table class="mini"><thead><tr><th>School</th><th class="num">National-level</th><th class="num">Of all commits</th><th class="num">2027</th><th class="num">2028</th>'+(G==="m"?'<th class="num">U16 Worlds</th>':'')+'</tr></thead><tbody>'+L.map(function(r){return '<tr><td>'+spBtn(r[0])+'</td><td class="num"><b>'+r[1]+'</b></td><td class="num">'+r[2]+'</td><td class="num">'+r[4][1]+' of '+r[4][0]+'</td><td class="num">'+(r[5][0]?r[5][1]+' of '+r[5][0]:'–')+'</td>'+(G==="m"?'<td class="num">'+(r[3]||'·')+'</td>':'')+'</tr>'}).join("")+'</tbody></table></div></div></details>'})();el.querySelectorAll('details[data-tl]').forEach(function(d){d.addEventListener('toggle',function(){TLO[d.dataset.tl]=d.open})})}
+var FOLD4={};
+function foldH4(box){if(!box)return;var F=/^(Aid and NCAA eligibility|Playing-time outlook|Commits|Where its recruits come from|Feeder clubs)/,kids=[].slice.call(box.children),cur=null;kids.forEach(function(k){if(k.tagName==="H4"){var t=k.textContent.trim();if(F.test(t)){var key=t.replace(/[\d,()]+/g,"").trim(),d=document.createElement("details");d.className="pvfold";if(FOLD4[key])d.open=true;d.innerHTML='<summary>'+esc(t)+'</summary>';var b=document.createElement("div");d.appendChild(b);box.insertBefore(d,k);k.remove();d.addEventListener("toggle",function(){FOLD4[key]=d.open});cur=b}else cur=null}else if(cur){cur.appendChild(k)}})}
 function drawFeed(){drawTL();
   var F=FEED[G],yrs=[2026,2027,2028];
   var rows=F.filter(function(r){return(!FD.col||r[1]===FD.col)&&(!FD.club||r[3]===FD.club)});
