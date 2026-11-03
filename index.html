@@ -212,6 +212,15 @@
 .wpr #tb-sch td{white-space:nowrap}
 .wpr #tb-sch td.sch,.wpr #tb-sch th.sch{position:static;box-shadow:none;border-right:0}
 .wpr #tb-sch td.wrapc{white-space:normal}
+@media (max-width:600px){
+  .wpr td.sch,.wpr th.sch{white-space:normal;max-width:34vw;min-width:96px;font-size:13px;line-height:1.25;padding:7px 6px}
+  .wpr td.sch .rec,.wpr td.sch .trd,.wpr td.sch .div{display:none}
+  .wpr td.sch .rkb{display:inline-block;margin:2px 0 0;font-size:9.5px;padding:0 4px}
+  .wpr td.sch .cdot{width:7px;height:7px;margin-left:3px}
+  .wpr td.sch .tog::before{width:10px}
+  .wpr td.num,.wpr th.num{padding:7px 5px;font-size:12.5px}
+  .wpr th{font-size:10px;letter-spacing:.03em}
+}
 @media (prefers-reduced-motion:reduce){.wpr *{transition:none!important}}
 </style>
 </head>
