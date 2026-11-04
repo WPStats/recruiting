@@ -1246,10 +1246,10 @@ function fillMeta(){root.querySelectorAll("[data-upd]").forEach(function(e){e.te
 function renderAll(){fillMeta();
   [27,28,29,30].forEach(function(y){state[y].open={};state[y].conf={};confChips(root.querySelector('.controls[data-for="'+y+'"] .conf-row'),state[y],function(){draw(y)});draw(y)});
   FP={};
-  fbar("fb-u27","u27","u27","2027",U27,drawU27,[["cf","Confirmed 2027"],["lk","Likely 2027"],["u","2027 or 2028"]],true);
-  fbar("fb-pool","pool","pool","2028",K,dp28,[["cm","Committed"],["cf","Confirmed 2028"],["lk","Likely 2028"],["u","2028 or 2029"]]);
-  fbar("fb-pool29","pool29","pool","2029",K29,dp29,[["cf","Confirmed 2029"],["lk","Likely 2029"],["u","2028 or 2029"]]);
-  fbar("fb-pool30","pool30","pool","2030",K30,dp30,[["cf","Confirmed 2030"],["lk","Likely 2030"],["u","2029 or 2030"]]);
+  fbar("fb-u27","u27","u27","2027",U27.filter(function(x){return x[4]!=="cm"}),drawU27,[["cf","Confirmed 2027"],["lk","Likely 2027"],["u","2027 or 2028"]],true);
+  fbar("fb-pool","pool","pool","2028",K.filter(function(x){return x[5]!=="cm"}),dp28,[["cf","Confirmed 2028"],["lk","Likely 2028"],["u","2028 or 2029"]]);
+  fbar("fb-pool29","pool29","pool","2029",K29.filter(function(x){return x[5]!=="cm"}),dp29,[["cf","Confirmed 2029"],["lk","Likely 2029"],["u","2028 or 2029"]]);
+  fbar("fb-pool30","pool30","pool","2030",K30.filter(function(x){return x[5]!=="cm"}),dp30,[["cf","Confirmed 2030"],["lk","Likely 2030"],["u","2029 or 2030"]]);
   drawCom();dp28();dp29();dp30();
   var pl=$("#poll-lbl");if(pl)pl.textContent=POLL[G].label;var ps=$("#poll-src");if(ps)ps.href=POLL[G].url;
   drawCoach();CMP=[];
